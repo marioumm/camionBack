@@ -15,6 +15,7 @@ import {
 } from 'typeorm';
 import { JwtService } from '@nestjs/jwt';
 import { OTPService } from './otp-service';
+import { EmailService } from './email.service';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
@@ -34,6 +35,7 @@ export class UsersService {
     private readonly userRepository: Repository<User>,
     private jwtService: JwtService,
     private otpService: OTPService,
+    private emailService: EmailService,
     @Inject('NOTIFICATIONS_SERVICE')
     private readonly notificationsClient: ClientProxy,
     @Inject('CART_SERVICE') 
@@ -181,15 +183,24 @@ export class UsersService {
 
   async login(dto: LoginDto) {
     try {
-      if (!dto.email || !dto.phone) {
+      // if (!dto.email || !dto.phone) {
+      //   throw new RpcException({
+      //     statusCode: 400,
+      //     message: 'Email and phone are required',
+      //   });
+      // }
+      if (!dto.email) {
         throw new RpcException({
           statusCode: 400,
-          message: 'Email and phone are required',
+          message: 'Email is required',
         });
       }
 
+      // const user = await this.userRepository.findOne({
+      //   where: { email: dto.email, phone: dto.phone },
+      // });
       const user = await this.userRepository.findOne({
-        where: { email: dto.email, phone: dto.phone },
+        where: { email: dto.email },
       });
 
       if (!user) {
@@ -200,9 +211,10 @@ export class UsersService {
       }
 
       const SPECIAL_EMAIL = process.env.SPECIAL_USER_EMAIL;
-      const SPECIAL_PHONE = process.env.SPECIAL_USER_PHONE;
+      // const SPECIAL_PHONE = process.env.SPECIAL_USER_PHONE;
 
-      if (dto.email === SPECIAL_EMAIL && dto.phone === SPECIAL_PHONE) {
+      // if (dto.email === SPECIAL_EMAIL && dto.phone === SPECIAL_PHONE) {
+      if (dto.email === SPECIAL_EMAIL) {
         const FIXED_OTP = process.env.FIXED_OTP || '111111';
         user.code = FIXED_OTP;
         await this.userRepository.save(user);
@@ -222,11 +234,12 @@ export class UsersService {
 
       await this.userRepository.save(user);
 
-      await this.otpService.sendSms(
-        user.phone,
-        `Camion Verification code ${OTP}`,
-      );
-      return { success: true, msg: `Check Code on ${user.phone}!` };
+      // await this.otpService.sendSms(
+      //   user.phone,
+      //   `Camion Verification code ${OTP}`,
+      // );
+      await this.emailService.sendOtp(user.email, OTP);
+      return { success: true, msg: `Check code sent to ${user.email}!` };
 
     } catch (error) {
       console.error('Login error at login');
@@ -237,15 +250,24 @@ export class UsersService {
 
 async verifyOTP(dto: VerifyDto, guestId?: string) {
   try {
-    if (!dto.email || !dto.phone) {
+    // if (!dto.email || !dto.phone) {
+    //   throw new RpcException({
+    //     statusCode: 400,
+    //     message: 'Email and phone are required',
+    //   });
+    // }
+    if (!dto.email) {
       throw new RpcException({
         statusCode: 400,
-        message: 'Email and phone are required',
+        message: 'Email is required',
       });
     }
 
+    // const user = await this.userRepository.findOne({
+    //   where: { email: dto.email, phone: dto.phone },
+    // });
     const user = await this.userRepository.findOne({
-      where: { email: dto.email, phone: dto.phone },
+      where: { email: dto.email },
     });
 
     if (!user)

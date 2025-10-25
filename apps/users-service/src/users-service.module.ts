@@ -6,6 +6,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { User } from './entities/user.entity';
 import { JwtModule } from '@nestjs/jwt';
 import { OTPService } from './otp-service';
+import { EmailService } from './email.service';
 import { AuthModule } from '@app/auth';
 import { ClientsModule, Transport } from '@nestjs/microservices';
 import { ScheduleModule } from '@nestjs/schedule';
@@ -71,6 +72,6 @@ import { HttpModule } from '@nestjs/axios';
     ]),
   ],
   controllers: [UsersServiceController ],
-  providers: [UsersService, OTPService ],
+  providers: [UsersService, OTPService, EmailService ],
 })
 export class UsersServiceModule { }
