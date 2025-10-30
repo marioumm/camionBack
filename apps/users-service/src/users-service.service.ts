@@ -181,6 +181,56 @@ export class UsersService {
     }
   }
 
+  async oauthLogin(data: { email: string; fullName?: string; googleId: string }) {
+    try {
+      const { email, fullName, googleId } = data;
+
+      if (!email || !googleId) {
+        throw new RpcException({ statusCode: 400, message: 'Missing email or googleId' });
+      }
+
+      // Ensure googleId uniqueness if already linked elsewhere
+      const existingByGoogle = await this.userRepository.findOne({ where: { googleId } });
+      if (existingByGoogle && existingByGoogle.email !== email) {
+        // Edge case: googleId already linked to a different email
+        throw new RpcException({ statusCode: 409, message: 'Google account already linked to another user' });
+      }
+
+      let user = await this.userRepository.findOne({ where: { email } });
+
+      if (!user) {
+        const fallbackName = fullName && fullName.trim().length > 0 ? fullName : (email.split('@')[0] || 'Google User');
+        user = this.userRepository.create({
+          email,
+          fullName: fallbackName,
+          googleId,
+          role: UserRole.USER,
+        });
+        user = await this.userRepository.save(user);
+      } else if (!user.googleId) {
+        user.googleId = googleId;
+        user = await this.userRepository.save(user);
+      }
+
+      const wasFirstLogin = user.isFirstLogin;
+      if (user.isFirstLogin) {
+        user.isFirstLogin = false;
+        await this.userRepository.save(user);
+      }
+
+      const payload = {
+        sub: user.id,
+        email: user.email,
+        phone: user.phone,
+        role: user.role,
+      };
+      const token = this.jwtService.sign(payload);
+
+      return { accessToken: token, user, isFirstLogin: wasFirstLogin };
+    } catch (error) {
+      throw toRpc(error, 'OAuth login failed');
+    }
+  }
   async login(dto: LoginDto) {
     try {
       // if (!dto.email || !dto.phone) {

@@ -101,6 +101,18 @@ export class UsersServiceController {
     }
   }
 
+  @MessagePattern({ cmd: 'oauth_login' })
+  async oauthLogin(
+    @Payload()
+    data: { email: string; fullName?: string; googleId: string }
+  ) {
+    try {
+      return await this.usersService.oauthLogin(data);
+    } catch (error) {
+      throw mapException(error);
+    }
+  }
+
   @MessagePattern({ cmd: 'get_users' })
   async getAllUsers() {
     try {

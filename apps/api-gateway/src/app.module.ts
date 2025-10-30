@@ -10,6 +10,8 @@ import { OrdersController } from "./controllers/order.controller";
 import { HealthController } from "./controllers/health.controller";
 import { WebhookController } from "./controllers/webhook.controller";
 import { SettingsController } from "./controllers/settings.controller";
+import { AuthController } from "./controllers/auth.controller";
+import { GoogleOAuthStrategy } from "./auth/google.strategy";
 
 @Module({
   imports: [
@@ -107,7 +109,9 @@ import { SettingsController } from "./controllers/settings.controller";
     WishlistController,
     WebhookController,
     SettingsController,
-    HealthController
+    HealthController,
+    AuthController
   ],
+  providers: [GoogleOAuthStrategy],
 })
 export class AppModule { }

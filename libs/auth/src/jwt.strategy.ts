@@ -7,11 +7,22 @@ import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { ConfigService } from '@nestjs/config';
 
+// Prefer cookie (HTTP-only) then fall back to Authorization header
+const cookieExtractor = (req: any): string | null => {
+  if (req?.cookies?.['token']) {
+    return req.cookies['token'] as string;
+  }
+  return null;
+};
+
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
   constructor(configService: ConfigService) {
     super({
-      jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
+      jwtFromRequest: ExtractJwt.fromExtractors([
+        cookieExtractor,
+        ExtractJwt.fromAuthHeaderAsBearerToken(),
+      ]),
       ignoreExpiration: false,
       secretOrKey: configService.get<string>('JWT_SECRET'),
     });
@@ -19,18 +30,18 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
 
   async validate(payload: any) {
     console.log('JWT Strategy - Payload:', payload);
-    
+
     if (!payload) {
       throw new UnauthorizedException('Invalid token payload');
     }
-    
+
     if (!payload.sub && !payload.id) {
       throw new UnauthorizedException('User ID not found in token');
     }
-    
+
     return {
       id: payload.sub || payload.id,
-      sub: payload.sub || payload.id, 
+      sub: payload.sub || payload.id,
       email: payload.email,
       phone: payload.phone,
       role: payload.role,

@@ -79,6 +79,12 @@ export class UserController {
   }
 
   @UseGuards(JwtAuthGuard)
+  @Get('me')
+  getCurrentUser(@CurrentUserId() userId: string) {
+    return this.usersClient.send({ cmd: 'get_user_by_id' }, userId);
+  }
+
+  @UseGuards(JwtAuthGuard)
   @Get(':id')
   getUserById(@Param('id') id: string) {
     return this.usersClient.send({ cmd: 'get_user_by_id' }, id);

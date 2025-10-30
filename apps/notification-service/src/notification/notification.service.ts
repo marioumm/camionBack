@@ -21,13 +21,34 @@ export class NotificationService {
   private readonly logger = new Logger(NotificationService.name);
 
   constructor(
-    @Inject(FIREBASE_ADMIN) private readonly firebase: typeof admin,
+    @Inject(FIREBASE_ADMIN) private readonly firebase: typeof admin | null,
     @InjectRepository(Notification)
     private readonly notificationRepo: Repository<Notification>,
-  ) { }
+  ) {
+    if (!this.firebase) {
+      this.logger.warn('Firebase not initialized. Push notifications are disabled.');
+    }
+  }
 
 
   async sendToToken(dto: SendPushDto & { userId?: string }) {
+    if (!this.firebase) {
+      this.logger.warn('Firebase not available. Skipping push notification.');
+      
+      // Still save notification to database if userId is provided
+      if (dto.userId) {
+        await this.notificationRepo.save({
+          userId: dto.userId,
+          title: dto.title,
+          body: dto.body,
+          data: dto.data,
+          isRead: false,
+        });
+      }
+      
+      return { id: 'firebase-disabled' };
+    }
+
     const message: admin.messaging.Message = {
       token: dto.token,
       notification: { title: dto.title, body: dto.body },

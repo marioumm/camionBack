@@ -3,11 +3,11 @@ import { AppModule } from './app.module';
 import * as dotenv from 'dotenv';
 import { MicroserviceOptions, Transport } from '@nestjs/microservices';
 import { ValidationPipe } from '@nestjs/common';
-import { NestExpressApplication } from '@nestjs/platform-express'; 
+import { NestExpressApplication } from '@nestjs/platform-express';
 // import { JwtAuthGuard } from '@app/auth';
 import helmet from 'helmet';
 import * as bodyParser from 'body-parser';
-
+import * as cookieParser from 'cookie-parser';
 
 dotenv.config();
 dotenv.config({ path: __dirname + '../../../.env' });
@@ -15,10 +15,12 @@ dotenv.config({ path: __dirname + '../../../.env' });
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
 
-
+  app.use(cookieParser());
 
   app.enableCors({
-    origin: '*',
+    origin: process.env.FRONTEND_ORIGIN
+      ? process.env.FRONTEND_ORIGIN.split(',')
+      : true,
     methods: ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE'],
     credentials: true,
   });
@@ -32,7 +34,6 @@ async function bootstrap() {
       transform: true,
     }),
   );
-
 
   await app.listen(process.env.API_GATEWAY_HTTP_PORT || 5000);
 
@@ -48,7 +49,6 @@ async function bootstrap() {
     '/orders/stripe-webhook',
     bodyParser.raw({ type: 'application/json' }),
   );
-
 
   await app.startAllMicroservices();
 }
