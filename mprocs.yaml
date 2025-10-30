@@ -1,0 +1,24 @@
+procs:
+  api-gateway:
+    cmd: ["nest", "start", "api-gateway"]
+  
+  users-service:
+    cmd: ["nest", "start", "users-service"]
+  
+  cart-service:
+    cmd: ["nest", "start", "cart-service"]
+  
+  orders-service:
+    cmd: ["nest", "start", "orders-service"]
+  
+  notification-service:
+    cmd: ["nest", "start", "notification-service"]
+  
+  affiliate-service:
+    cmd: ["nest", "start", "affiliate-service"]
+  
+  wishlist-service:
+    cmd: ["nest", "start", "wishlist-service"]
+  
+  settings-service:
+    cmd: ["nest", "start", "settings-service"]
