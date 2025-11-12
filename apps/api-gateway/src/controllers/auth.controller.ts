@@ -193,7 +193,7 @@ export class AuthController {
       path: '/',
     });
 
-    const redirectUrl = process.env.FRONTEND_ORIGIN || '/';
+    const redirectUrl = process.env.FRONTEND_ORIGIN || 'https://camion-app.com';
     return res.redirect(302, redirectUrl);
   }
 }
