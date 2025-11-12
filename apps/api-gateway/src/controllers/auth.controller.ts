@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/require-await */
 import {
   Controller,
+  Logger,
   Get,
   Post,
   Body,
@@ -22,6 +23,7 @@ import { MobileGoogleAuthDto } from '../dto/mobile-google-auth.dto';
 
 @Controller('auth')
 export class AuthController {
+  private readonly logger = new Logger();
   constructor(
     @Inject('USERS_SERVICE') private readonly usersClient: ClientProxy,
   ) {}
@@ -31,15 +33,22 @@ export class AuthController {
   async googleAuth() {
     return;
   }
+  
+  
 
   @Get('google/callback')
   @UseGuards(AuthGuard('google'))
   async googleCallback(@Req() req: Request, @Res() res: Response) {
+
+    console.log(`Google Callback `);
+
     const profile = req.user as {
       email: string;
       fullName: string;
       googleId: string;
     };
+
+    this.logger.log(`Google Callback ${JSON.stringify(profile)}`);
 
     const { email, fullName, googleId } = profile;
 
@@ -67,7 +76,7 @@ export class AuthController {
       path: '/',
     });
 
-    const redirectUrl = process.env.FRONTEND_REDIRECT_URL || '/';
+    const redirectUrl = process.env.FRONTEND_REDIRECT_URL || 'https://camion-app.com/auth/success';
     return res.redirect(302, redirectUrl);
   }
 
