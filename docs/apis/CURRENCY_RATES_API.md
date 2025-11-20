@@ -1,6 +1,6 @@
 # Currency Rates API (via Utility Service)
 
-This document describes the currency pricing endpoint exposed via the API Gateway, backed internally by the `utility-service` (which talks to `exchangerate.host`). From the frontend/mobile point of view, the HTTP endpoint remains the same.
+This document describes the currency pricing endpoint exposed via the API Gateway, backed internally by the `utility-service` (which talks to `exchangerate.host`).
 
 The goal is to provide frontend and mobile clients with fast, cached access to FX rates.
 
@@ -9,7 +9,7 @@ The goal is to provide frontend and mobile clients with fast, cached access to F
 ## Overview
 
 - **Public HTTP entrypoint (via API Gateway)**  
-  `GET <API_BASE_URL>/admin/settings/currency-rates`
+  `GET <API_BASE_URL>/utility/currency-rates`
 
 - **Upstream provider**: [`https://api.exchangerate.host`](https://exchangerate.host/)
 - **Caching**: Rates are cached **per (base, symbols) combination** for **24 hours** in the `utility-service`.
@@ -24,8 +24,8 @@ The goal is to provide frontend and mobile clients with fast, cached access to F
 ### Method & Path
 
 - **Method**: `GET`
-- **Path**: `/admin/settings/currency-rates`
-- **Full URL**: `GET <API_BASE_URL>/admin/settings/currency-rates`
+- **Path**: `/utility/currency-rates`
+- **Full URL**: `GET <API_BASE_URL>/utility/currency-rates`
 
 ### Query Parameters
 
@@ -43,19 +43,19 @@ The goal is to provide frontend and mobile clients with fast, cached access to F
 
 - **All rates relative to USD**:
 
-  `GET <API_BASE_URL>/admin/settings/currency-rates`
+  `GET <API_BASE_URL>/utility/currency-rates`
 
 - **All rates relative to EUR**:
 
-  `GET <API_BASE_URL>/admin/settings/currency-rates?base=EUR`
+  `GET <API_BASE_URL>/utility/currency-rates?base=EUR`
 
 - **Filtered symbols (EGP and SAR) relative to USD**:
 
-  `GET <API_BASE_URL>/admin/settings/currency-rates?symbols=EGP,SAR`
+  `GET <API_BASE_URL>/utility/currency-rates?symbols=EGP,SAR`
 
 - **Filtered symbols (EGP, SAR, AED) relative to EUR**:
 
-  `GET <API_BASE_URL>/admin/settings/currency-rates?base=EUR&symbols=EGP,SAR,AED`
+  `GET <API_BASE_URL>/utility/currency-rates?base=EUR&symbols=EGP,SAR,AED`
 
 ---
 
@@ -183,7 +183,7 @@ Each unique key has its **own** cached entry and TTL.
 
 ## Quick Summary for Implementers
 
-- **Endpoint**: `GET <API_BASE_URL>/admin/settings/currency-rates`
+- **Endpoint**: `GET <API_BASE_URL>/utility/currency-rates`
 - **Query params**:
   - `base` (optional, default `USD`)
   - `symbols` (optional, comma-separated list, default all)

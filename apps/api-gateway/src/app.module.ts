@@ -10,6 +10,7 @@ import { OrdersController } from "./controllers/order.controller";
 import { HealthController } from "./controllers/health.controller";
 import { WebhookController } from "./controllers/webhook.controller";
 import { SettingsController } from "./controllers/settings.controller";
+import { UtilityController } from "./controllers/utility.controller";
 import { AuthController } from "./controllers/auth.controller";
 import { GoogleOAuthStrategy } from "./auth/google.strategy";
 
@@ -120,6 +121,7 @@ import { GoogleOAuthStrategy } from "./auth/google.strategy";
     WishlistController,
     WebhookController,
     SettingsController,
+    UtilityController,
     HealthController,
     AuthController
   ],
