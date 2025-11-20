@@ -9,7 +9,8 @@ import {
   Body,
   Inject,
   UseInterceptors, 
-  UploadedFile
+  UploadedFile,
+  Query,
 } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
 import { FileInterceptor } from '@nestjs/platform-express';
@@ -21,7 +22,9 @@ import 'multer';
 export class SettingsController {
   constructor(
     @Inject('SETTINGS_SERVICE') 
-    private readonly settingsClient: ClientProxy
+    private readonly settingsClient: ClientProxy,
+    @Inject('UTILITY_SERVICE')
+    private readonly utilityClient: ClientProxy,
   ) {}
 
   @Post('upload-logo')
@@ -100,6 +103,30 @@ export class SettingsController {
         success: false,
         message: 'Failed to get logo from S3',
         error: error.message
+      };
+    }
+  }
+
+  @Get('currency-rates')
+  async getCurrencyRates(
+    @Query('base') base?: string,
+    @Query('symbols') symbols?: string,
+  ) {
+    try {
+      const result = await firstValueFrom(
+        this.utilityClient.send(
+          { cmd: 'get_exchange_rates' },
+          { base, symbols },
+        ),
+      );
+
+      return result;
+    } catch (error: any) {
+      console.error('Get currency rates error:', error);
+      return {
+        success: false,
+        message: 'Failed to get currency rates',
+        error: error?.message || 'Unknown error',
       };
     }
   }

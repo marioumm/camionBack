@@ -8,7 +8,7 @@ import * as path from 'path';
 @Injectable()
 export class SettingsServiceService {
   private readonly logger = new Logger(SettingsServiceService.name);
-  private currentLogoKey: string | null = null; 
+  private currentLogoKey: string | null = null;
 
   constructor(private readonly s3Service: S3Service) {}
 

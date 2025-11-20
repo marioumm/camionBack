@@ -98,6 +98,17 @@ import { GoogleOAuthStrategy } from "./auth/google.strategy";
         }),
         inject: [ConfigService],
       },
+      {
+        name: 'UTILITY_SERVICE',
+        useFactory: (config: ConfigService) => ({
+          transport: Transport.TCP,
+          options: {
+            host: config.get('UTILITY_SERVICE_HOST'),
+            port: Number(config.get('UTILITY_TCP_PORT')),
+          },
+        }),
+        inject: [ConfigService],
+      },
     ]),
     AuthModule
   ],
