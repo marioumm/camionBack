@@ -23,5 +23,5 @@ procs:
   settings-service:
     cmd: ['nest', 'start', 'settings-service']
 
-  # utility-service:
-  #   cmd: ['nest', 'start', 'utility-service']
+  utility-service:
+    cmd: ['nest', 'start', 'utility-service']
