@@ -5,7 +5,10 @@ import { firstValueFrom } from 'rxjs';
 @Injectable()
 export class UtilityServiceService {
   private readonly logger = new Logger(UtilityServiceService.name);
-  private exchangeRatesCache = new Map<string, { timestamp: number; data: any }>();
+  private exchangeRatesCache = new Map<
+    string,
+    { timestamp: number; data: any }
+  >();
 
   constructor(private readonly httpService: HttpService) {}
 
@@ -37,21 +40,41 @@ export class UtilityServiceService {
       };
     }
 
-    const queryParams: Record<string, string> = { base, access_key: accessKey };
+    const queryParams: Record<string, string> = {
+      source: base,
+      access_key: accessKey,
+    };
     if (symbols) {
-      queryParams.symbols = symbols;
+      queryParams.currencies = symbols;
     }
 
     try {
-      this.logger.log(`Fetching exchange rates from exchangerate.host for ${cacheKey}`);
+      this.logger.log(
+        `Fetching exchange rates from exchangerate.host for ${cacheKey}`,
+      );
 
       const response = await firstValueFrom(
-        this.httpService.get('https://api.exchangerate.host/latest', {
+        this.httpService.get('https://api.exchangerate.host/live', {
           params: queryParams,
         }),
       );
 
       const data = response.data;
+
+      // Transform new API format (quotes) to old format (rates) for backward compatibility
+      if (data.success && data.quotes && !data.rates) {
+        const rates: Record<string, number> = {};
+        const source = data.source || base;
+
+        Object.entries(data.quotes).forEach(([key, value]) => {
+          if (key.startsWith(source)) {
+            rates[key.substring(source.length)] = value as number;
+          } else {
+            rates[key] = value as number;
+          }
+        });
+        data.rates = rates;
+      }
 
       this.exchangeRatesCache.set(cacheKey, {
         timestamp: now,
@@ -64,7 +87,10 @@ export class UtilityServiceService {
         ...data,
       };
     } catch (error: any) {
-      this.logger.error('Error fetching exchange rates:', error?.message || error);
+      this.logger.error(
+        'Error fetching exchange rates:',
+        error?.message || error,
+      );
 
       if (cached) {
         return {
