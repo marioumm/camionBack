@@ -1,23 +1,25 @@
 import {
   IsEmail,
-  IsNotEmpty,
+  IsOptional,
   IsPhoneNumber,
   IsString,
   Matches,
+  IsNotEmpty,
 } from 'class-validator';
 
 export class VerifyDto {
-  @IsEmail()
-  @IsNotEmpty({ message: 'Email is required' })
-  email: string;
+  @IsEmail({}, { message: 'Invalid email format' })
+  @IsOptional()
+  email?: string;
 
-  // @IsPhoneNumber()
-  // @IsNotEmpty({ message: 'Phone is required' })
-  // @Matches(/^\+?\d+$/, { message: 'Phone must be numeric and optionally start with +' })
-  // phone: string;
+  @IsPhoneNumber()
+  @IsOptional()
+  @Matches(/^\+?\d+$/, {
+    message: 'Phone must be numeric and optionally start with +',
+  })
+  phone?: string;
 
   @IsString()
   @IsNotEmpty({ message: 'OTP code is required' })
   code: string;
-
 }

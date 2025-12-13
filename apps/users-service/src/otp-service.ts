@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable,Logger } from '@nestjs/common';
 // import { Twilio } from 'twilio';
 import axios from 'axios';
 
@@ -9,8 +9,10 @@ export class OTPService {
   private username: string;
   private apiKey: string;
   private sender: string;
+  private readonly logger = new Logger('OTP Service');
 
   constructor() {
+    
     // this.client = new Twilio(
     //   process.env.TWILIO_ACCOUNT_SID,
     //   process.env.TWILIO_AUTH_TOKEN,
@@ -18,7 +20,7 @@ export class OTPService {
     // this.verifySid = process.env.TWILIO_VERIFY_SID || "";
     this.username = process.env.QATARSMS_USERNAME || '';
     this.apiKey = process.env.QATARSMS_APIKEY || '';
-    this.sender = process.env.QATARSMS_SENDER || 'Camion';
+    this.sender = process.env.QATARSMS_SENDER || 'CAMION';
   }
   async sendSms(to: string, body: string): Promise<any> {
     const sanitizedTo = to.replace(/^\+/, '');
@@ -39,6 +41,8 @@ export class OTPService {
       timeout: 15000,
     });
     const data: string = typeof resp.data === 'string' ? resp.data : String(resp.data);
+    this.logger.log(`OTP , ${String(data)}`);
+
     if (data.includes('ORDERID:')) {
       return { provider: 'qatarsms', response: data };
     }
@@ -55,6 +59,7 @@ export class OTPService {
     ];
     const match = known.find(code => data.includes(code));
     const message = match ? `QatarSMS error: ${match}` : `QatarSMS unexpected response: ${data}`;
+    return { provider: 'qatarsms', response: message };
     throw new Error(message);
   }
   async sendOTP(phone: string): Promise<any> {

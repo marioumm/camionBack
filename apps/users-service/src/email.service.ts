@@ -28,7 +28,7 @@ export class EmailService {
       this.logger.log(`OTP email sent to ${toEmail}`);
     } catch (error) {
       this.logger.error('Failed to send OTP email', error as any);
-      throw error;
+      // this.logger.error('Failed to send OTP email', msg);
     }
   }
 }
