@@ -108,6 +108,15 @@
       "compilerOptions": {
         "tsConfigPath": "apps/wishlist-service/tsconfig.app.json"
       }
+    },
+    "utility-service": {
+      "type": "application",
+      "root": "apps/utility-service",
+      "entryFile": "main",
+      "sourceRoot": "apps/utility-service/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/utility-service/tsconfig.app.json"
+      }
     }
   }
 }

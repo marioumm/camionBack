@@ -9,7 +9,7 @@ import {
   Body,
   Inject,
   UseInterceptors, 
-  UploadedFile
+  UploadedFile,
 } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
 import { FileInterceptor } from '@nestjs/platform-express';
@@ -21,7 +21,7 @@ import 'multer';
 export class SettingsController {
   constructor(
     @Inject('SETTINGS_SERVICE') 
-    private readonly settingsClient: ClientProxy
+    private readonly settingsClient: ClientProxy,
   ) {}
 
   @Post('upload-logo')

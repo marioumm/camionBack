@@ -7,10 +7,10 @@
   "license": "UNLICENSED",
   "scripts": {
     "build": "nest build",
-    "nest-build": "npx nest build cart-service users-service affiliate-service wishlist-service notification-service api-gateway  orders-service settings-service",
+    "nest-build": "npx nest build cart-service users-service affiliate-service wishlist-service notification-service api-gateway  orders-service settings-service utility-service",
     "format": "prettier --write \"apps/**/*.ts\" \"libs/**/*.ts\"",
     "start": "nest start api-gateway",
-    "start:all": "concurrently \"nest start api-gateway\" \"nest start users-service\" \"nest start cart-service\" \"nest start orders-service\" \"nest start notification-service\" \"nest start affiliate-service\" \"nest start wishlist-service\" \"nest start settings-service\"",
+    "start:all": "concurrently \"nest start api-gateway\" \"nest start users-service\" \"nest start cart-service\" \"nest start orders-service\" \"nest start notification-service\" \"nest start affiliate-service\" \"nest start wishlist-service\" \"nest start settings-service\" \"nest start utility-service\"",
     "start:tui": "mprocs",
     "start:dev": "nest start --watch",
     "start:debug": "nest start --debug --watch",
